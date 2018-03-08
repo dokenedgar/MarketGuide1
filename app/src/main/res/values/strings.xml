@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Market Guide</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="products">
+        <item>Children Clothes</item>
+        <item>Women Clothes</item>
+        <item>Laces / Wrappers</item>
+        <item>Men Clothes</item>
+        <item>Children Shoes</item>
+        <item>Women Shoes</item>
+        <item>Men Shoes</item>
+        <item>Bags - Wedding/Travelling/School</item>
+        <item>Bookshops</item>
+        <item>Fairly Used Clothes</item>
+        <item>Palm / Vegetable Oils</item>
+        <item>Curtains</item>
+        <item>General Provisions</item>
+        <item>Make up / Perfumes / Creams</item>
+        <item>Sport Items</item>
+        <item>Household Electronics</item>
+        <item>Furniture</item>
+        <item>Foreign Rice / Flours</item>
+    </string-array>
+
+</resources>
