@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -19,6 +20,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +40,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Map;
 
 
 /**
@@ -45,6 +55,8 @@ public class clickedCategoryFragment extends Fragment {
     ListView listView;
     ArrayList shopName;
     Button btnReload;
+
+    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("shopscategories/menshoes");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,8 +73,50 @@ public class clickedCategoryFragment extends Fragment {
         categoryName = getArguments().getString("categoryName","nothing");
         //TxtCategory.setText(getArguments().getString("categoryName","nothing"));
         TxtCategory.setText(categoryName);
+
+        mDocRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String shop = documentSnapshot.getString("shopnum");
+
+                Map<String, Object> listShops = documentSnapshot.getData();
+                //li.forEach( (k,v) -> [do something with key and value] );
+                shopName = new ArrayList();
+                //listShops.forEach((k, v) -> shopName.add(v.toString()););
+                for (Map.Entry<String, Object> entry : listShops.entrySet()){
+                    //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                    shopName.add(entry.getValue().toString());
+                }
+                if(shopName.isEmpty()){
+                    txtError.setVisibility(View.VISIBLE);
+                    txtError.setText("No data for selected category, would be added very soon!");
+                }
+                else{
+                    categoriesAdapter adapter = new categoriesAdapter(getActivity(), shopName);
+                    listView.setAdapter(adapter);
+                    //Add listview item click listener
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            Toast.makeText(getActivity(),"pos= "+i+", id= "+l,Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                //txtError.setVisibility(View.VISIBLE);
+                //txtError.setText(shop);
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                btnReload.setVisibility(View.VISIBLE);
+                btnReload.setText("FAILED NIGGER");
+            }
+        });
+
         if (isOnline()){
-            reload();
+           // reload(); USES ASYNCTASK
         }
         else{
             Toast.makeText(getActivity(), "Please enable data connection", Toast.LENGTH_LONG).show();
