@@ -1,6 +1,8 @@
 package com.edgar.marketguide;
 
 import android.content.Context;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,60 +16,44 @@ import java.util.ArrayList;
  * Created by Edgar on 03-Mar-18.
  */
 
-public class categoriesAdapter extends BaseAdapter {
-    Context context;
-    ArrayList shops;
-    private static LayoutInflater inflater = null;
+public class categoriesAdapter extends RecyclerView.Adapter<categoriesAdapter.myViewHolder> {
 
-    public categoriesAdapter(Context context, ArrayList shops) {
-        this.context = context;
+    private LayoutInflater inflater;
+    ArrayList shops;
+
+    public categoriesAdapter(Context context, ArrayList shops){
+        inflater = LayoutInflater.from(context);
         this.shops = shops;
-        inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public int getCount() {
+    public myViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.listview_layout, parent, false);
+        myViewHolder holder = new myViewHolder(view);
+        return holder;
+    }
+
+    @Override
+    public void onBindViewHolder(myViewHolder holder, int position) {
+        holder.shopNum.setText(shops.get(position).toString());
+    }
+
+    @Override
+    public int getItemCount() {
         return shops.size();
     }
 
-    @Override
-    public Object getItem(int i) {
-        return i;
-    }
-
-    @Override
-    public long getItemId(int i) {
-        return i;
-    }
-
-    public static class Holder{
-        //TextView tv;
-        //ImageView image;
+    class myViewHolder extends RecyclerView.ViewHolder {
+        CardView cardView;
         TextView shopNum;
+        public myViewHolder(View itemView) {
+            super(itemView);
+            shopNum = itemView.findViewById(R.id.shopNumber);
+            cardView = itemView.findViewById(R.id.cv);
 
-    }
-    @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
-        Holder holder;
-        if (view == null){
-            holder = new Holder();
-            view = inflater.inflate(R.layout.listview_layout,null);
-            // holder.AccName = (TextView) view.findViewById(R.id.AccoName);
-            holder.shopNum = (TextView) view.findViewById(R.id.shopNumber);
-            //holder.image =  (ImageView) view.findViewById(R.id.accoImage);
-            view.setTag(holder);
-        }
-        else {
-            holder = (Holder)view.getTag();
         }
 
-   /*     Picasso.with(context)
-                .load(images.get(i).toString())
-                .fit()
-                .into(holder.image);
-       */ //** FOR WHEN WORKIMG WITH IMAGES,
-        holder.shopNum.setText(shops.get(i).toString());
-
-        return view;
     }
+
+
 }

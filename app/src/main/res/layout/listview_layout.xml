@@ -1,31 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    >
+
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/cv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp">
+
+
+<RelativeLayout
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    card_view:cardBackgroundColor="#000000"
+    card_view:cardCornerRadius="5dp"
+    card_view:cardElevation="6dp"
+    card_view:cardMaxElevation="10dp">
 
     <ImageView
-        android:layout_marginTop="10dp"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/store"
+
+        android:layout_width="90dp"
+        android:layout_height="80dp"
+        android:src="@drawable/dress"
         android:id="@+id/clientsImage"
-        android:layout_marginBottom="10dp"
+        android:layout_margin="10dp"
         />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="World 30 seconds to doomsday"
+        android:text="A289"
         android:textColor="#131212"
         android:id="@+id/shopNumber"
-        android:layout_marginTop="10dp"
-        android:textSize="20sp"
-        android:layout_marginLeft="20dp"
+
+        android:textSize="40sp"
+        android:layout_marginLeft="40dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="10dp"
+        android:layout_centerInParent="true"
+
         android:layout_toRightOf="@id/clientsImage"
         />
 
+    <!--
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -44,4 +63,7 @@
         android:textSize="15sp"
         android:text="123-13232-223"/>
 
+        -->
+
 </RelativeLayout>
+</android.support.v7.widget.CardView>

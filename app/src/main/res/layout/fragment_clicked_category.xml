@@ -1,48 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground">
 
     <TextView
+        android:id="@+id/txtCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/txtCategory"
-        android:text="Our Clients"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
-        android:textSize="20sp"
-        android:textAppearance="?android:attr/textAppearanceLarge"/>
+        android:text="Our Clients"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="40sp" />
 
     <TextView
+        android:id="@+id/txtError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_gravity="center"
-        android:text="hello"
-        android:layout_marginTop="20dp"
-        android:visibility="gone"
-        android:textColor="#df0c0c"
         android:layout_below="@+id/txtCategory"
-        android:id="@+id/txtError"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="hello"
+        android:textColor="#df0c0c"
+        android:textSize="30sp"
+        android:visibility="gone" />
 
     <Button
+        android:id="@+id/btnError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_gravity="center"
-        android:text="hello"
-        android:layout_marginTop="20dp"
-        android:visibility="gone"
-        android:textColor="#df0c0c"
         android:layout_below="@+id/txtError"
-        android:id="@+id/btnError"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:text="hello"
+        android:textColor="#df0c0c"
+        android:textSize="30sp"
+        android:visibility="gone"
 
         />
 
     <ListView
+        android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/txtCategory"
-        android:id="@+id/list"/>
+        android:layout_below="@id/txtCategory" />
 
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/list">
+
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

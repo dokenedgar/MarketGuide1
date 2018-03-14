@@ -6,16 +6,19 @@
     >
 
     <ImageView
-        android:layout_width="150dp"
+        android:layout_width="120dp"
         android:layout_height="100dp"
-        android:id="@+id/img"/>
+        android:id="@+id/img"
+        android:layout_gravity="center_horizontal"
+        />
 
     <TextView
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:id="@+id/txt_products"
         android:gravity="center"
-
+        android:text="ff"
+        android:layout_gravity="center_horizontal"
         android:textSize="15sp"
         />
 <!--

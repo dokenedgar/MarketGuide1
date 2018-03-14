@@ -33,11 +33,11 @@ public class mainActivityFrag extends Fragment {
         gridView = (GridView) view.findViewById(R.id.gridView);
 
         final String[] products = getResources().getStringArray(R.array.products);
-        int storeImages[] = {R.drawable.shop, R.drawable.store, R.drawable.storeblue, R.drawable.market,
-                            R.drawable.store, R.drawable.shop, R.drawable.market, R.drawable.storeblue,
-                            R.drawable.shop, R.drawable.store, R.drawable.storeblue, R.drawable.market,
-                            R.drawable.shop, R.drawable.store, R.drawable.storeblue, R.drawable.market,
-                            R.drawable.store, R.drawable.shop};
+        int storeImages[] = {R.drawable.babyclothes2, R.drawable.dress, R.drawable.dress, R.drawable.menshirt,
+                            R.drawable.babyclothes, R.drawable.highheels, R.drawable.shoes, R.drawable.briefcase,
+                            R.drawable.bookshelf, R.drawable.menshirt, R.drawable.oil, R.drawable.window,
+                            R.drawable.bookshelf, R.drawable.perfume, R.drawable.sports, R.drawable.electronics,
+                            R.drawable.window, R.drawable.oil,};
         marketItemsAdapter adapter = new marketItemsAdapter(getActivity(), products, storeImages);
         gridView.setAdapter(adapter);
 

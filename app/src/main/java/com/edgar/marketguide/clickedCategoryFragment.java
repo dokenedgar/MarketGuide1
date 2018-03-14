@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +50,7 @@ import java.util.Map;
  */
 public class clickedCategoryFragment extends Fragment {
 
-    String categoryName;
+    String categoryName, shortCategoryName;
     View view;
     Context context;
     TextView TxtCategory, txtError;
@@ -56,7 +58,9 @@ public class clickedCategoryFragment extends Fragment {
     ArrayList shopName;
     Button btnReload;
 
-    private DocumentReference mDocRef = FirebaseFirestore.getInstance().document("shopscategories/menshoes");
+    private RecyclerView recyclerView;
+
+    private DocumentReference mDocRef;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +71,8 @@ public class clickedCategoryFragment extends Fragment {
         //createAlert();
         context = getActivity();
         listView =  view.findViewById(R.id.list);
+        recyclerView = view.findViewById(R.id.recycleView);
+
         TxtCategory = view.findViewById(R.id.txtCategory);
         txtError = view.findViewById(R.id.txtError);
         btnReload = view.findViewById(R.id.btnError);
@@ -74,37 +80,41 @@ public class clickedCategoryFragment extends Fragment {
         //TxtCategory.setText(getArguments().getString("categoryName","nothing"));
         TxtCategory.setText(categoryName);
 
+        shortCategoryName = getShortCategoryName(categoryName);
+        mDocRef = FirebaseFirestore.getInstance().document("shopscategories/"+shortCategoryName);
+
         mDocRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                String shop = documentSnapshot.getString("shopnum");
+               // String shop = documentSnapshot.getString("shopnum");
 
-                Map<String, Object> listShops = documentSnapshot.getData();
-                //li.forEach( (k,v) -> [do something with key and value] );
-                shopName = new ArrayList();
-                //listShops.forEach((k, v) -> shopName.add(v.toString()););
-                for (Map.Entry<String, Object> entry : listShops.entrySet()){
-                    //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-                    shopName.add(entry.getValue().toString());
+                if(documentSnapshot.exists()){
+                    Map<String, Object> listShops = documentSnapshot.getData();
+                    //li.forEach( (k,v) -> [do something with key and value] );
+                    shopName = new ArrayList();
+                    //listShops.forEach((k, v) -> shopName.add(v.toString()););
+                    for (Map.Entry<String, Object> entry : listShops.entrySet()){
+                        //System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                        shopName.add(entry.getValue().toString());
+                    }
+                    if(shopName.isEmpty()){
+                        txtError.setVisibility(View.VISIBLE);
+                        txtError.setText("No data for selected category, would be added very soon!");
+                    }
+                    else{
+                        categoriesAdapter adapter = new categoriesAdapter(getActivity(), shopName);
+                        //listView.setAdapter(adapter);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        recyclerView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
+                    }
                 }
-                if(shopName.isEmpty()){
-                    txtError.setVisibility(View.VISIBLE);
-                    txtError.setText("No data for selected category, would be added very soon!");
-                }
-                else{
-                    categoriesAdapter adapter = new categoriesAdapter(getActivity(), shopName);
-                    listView.setAdapter(adapter);
-                    //Add listview item click listener
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            Toast.makeText(getActivity(),"pos= "+i+", id= "+l,Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-                //txtError.setVisibility(View.VISIBLE);
-                //txtError.setText(shop);
             }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -115,29 +125,73 @@ public class clickedCategoryFragment extends Fragment {
             }
         });
 
-        if (isOnline()){
-           // reload(); USES ASYNCTASK
-        }
-        else{
-            Toast.makeText(getActivity(), "Please enable data connection", Toast.LENGTH_LONG).show();
-            btnReload.setVisibility(View.VISIBLE);
-            btnReload.setText("Reload..");
-        }
 
-        btnReload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isOnline()){
-                    reload();
-                }
-                else{
-                    Toast.makeText(getActivity(), "Please enable data connection", Toast.LENGTH_LONG).show();
-                    //btnReload.setVisibility(View.VISIBLE);
-                    //btnReload.setText("Reload..");
-                }
-            }
-        });
         return view;
+    }
+
+    private String getShortCategoryName(String LongcategoryName) {
+        String shortName = "menshoes";
+        switch (LongcategoryName){
+            case "Children Clothes":
+                shortName = "childrenclothes";
+                break;
+            case "Women Clothes":
+                shortName = "womenclothes";
+                break;
+            case "Men Clothes":
+                shortName = "menclothes";
+                break;
+            case "Laces / Wrappers":
+                shortName = "wrappers";
+                break;
+            case "Children Shoes":
+                shortName = "childrenshoes";
+                break;
+            case "Women Shoes":
+                shortName = "womenshoes";
+                break;
+            case "Men Shoes":
+                shortName = "menshoes";
+                break;
+            case "Bags - Wedding/Travelling/School":
+                shortName = "bags";
+                break;
+            case "Bookshops":
+                shortName = "bookshops";
+                break;
+            case "Fairly Used Clothes":
+                shortName = "failyusedclothes";
+                break;
+
+            case "Palm / Vegetable Oils":
+                shortName = "palmvegoils";
+                break;
+
+            case "Curtains":
+                shortName = "curtains";
+                break;
+
+            case "General Provisions":
+                shortName = "provisions";
+                break;
+
+            case "Make up / Perfumes / Creams":
+                shortName = "cosmetics";
+                break;
+            case "Sport Items":
+                shortName = "sportitems";
+                break;
+            case "Household Electronics":
+                shortName = "electronics";
+                break;
+            case "Furniture":
+                shortName = "furniture";
+                break;
+            case "Foreign Rice / Flours":
+                shortName = "riceflours";
+                break;
+        }
+        return shortName;
     }
 
     public boolean isOnline(){
@@ -146,9 +200,7 @@ public class clickedCategoryFragment extends Fragment {
         return (networkInfo != null && networkInfo.isConnected());
     }
 
-    public void btnReloadClick(View view){
 
-    }
     private void reload() {
         getShops shops = new getShops();
         shops.execute();
@@ -250,7 +302,7 @@ public class clickedCategoryFragment extends Fragment {
                 else{
                     categoriesAdapter adapter = new categoriesAdapter(getActivity(), shopName);
                     //old version //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,values);
-                    listView.setAdapter(adapter);
+                   // listView.setAdapter(adapter);
 
                     //Add listview item click listener
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
