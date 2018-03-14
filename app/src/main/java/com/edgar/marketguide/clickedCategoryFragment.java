@@ -111,7 +111,7 @@ public class clickedCategoryFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Exception e) {
                 btnReload.setVisibility(View.VISIBLE);
-                btnReload.setText("FAILED NIGGER");
+                btnReload.setText("Filed to load data");
                 progressDialog.dismiss();
             }
         });
