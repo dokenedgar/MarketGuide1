@@ -31,16 +31,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -57,8 +47,9 @@ public class clickedCategoryFragment extends Fragment {
     ListView listView;
     ArrayList shopName;
     Button btnReload;
+    ProgressDialog progressDialog;
+    RecyclerView recyclerView;
 
-    private RecyclerView recyclerView;
 
     private DocumentReference mDocRef;
 
@@ -81,6 +72,10 @@ public class clickedCategoryFragment extends Fragment {
         TxtCategory.setText(categoryName);
 
         shortCategoryName = getShortCategoryName(categoryName);
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Loading...");
+        progressDialog.setTitle("Fetching Data");
+        progressDialog.show();
         mDocRef = FirebaseFirestore.getInstance().document("shopscategories/"+shortCategoryName);
 
         mDocRef.get()
@@ -107,14 +102,9 @@ public class clickedCategoryFragment extends Fragment {
                         //listView.setAdapter(adapter);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                        recyclerView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                            }
-                        });
                     }
                 }
+                progressDialog.dismiss();
             }
         })
         .addOnFailureListener(new OnFailureListener() {
@@ -122,6 +112,7 @@ public class clickedCategoryFragment extends Fragment {
             public void onFailure(@NonNull Exception e) {
                 btnReload.setVisibility(View.VISIBLE);
                 btnReload.setText("FAILED NIGGER");
+                progressDialog.dismiss();
             }
         });
 
@@ -198,156 +189,6 @@ public class clickedCategoryFragment extends Fragment {
         ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
-    }
-
-
-    private void reload() {
-        getShops shops = new getShops();
-        shops.execute();
-    }
-
-
-
-    public class getShops extends AsyncTask <Void,Void,Void>{
-
-        ProgressDialog pd = new ProgressDialog(getActivity());
-        String json_string,RAW_Json;
-        int responseCode;
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            pd.setMessage("Loading " + categoryName+ " shops, Please Wait..");
-            pd.setIndeterminate(true);
-            pd.setCanceledOnTouchOutside(false);
-            pd.setCancelable(true);
-            pd.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            URL url;
-            HttpURLConnection urlConnection;
-            String urlParams;
-
-            try {
-                url = new URL("http://192.168.43.228/market_guide/getShops.php"); //wireless mtn correct ip add
-                urlConnection = (HttpURLConnection)url.openConnection();
-                //SETTING CONNECTION TIMEOUT
-                urlConnection.setConnectTimeout(5000); //15000
-                urlConnection.setReadTimeout(5000);
-
-                    urlParams = "category="+categoryName;
-
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setDoOutput(true);
-                DataOutputStream ds = new DataOutputStream(urlConnection.getOutputStream());
-                ds.writeBytes(urlParams);
-                ds.flush();
-                ds.close();
-                responseCode = urlConnection.getResponseCode();
-                shopName = new ArrayList();
-                //if response code isnt in 200 or 2xx, i.e successful, do not continue
-                if (200 <= responseCode && responseCode <=299){
-                    InputStream is = urlConnection.getInputStream();
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-                    StringBuilder sb = new StringBuilder();
-
-                    while ((json_string=br.readLine()) != null){
-                        sb.append(json_string + "\n");
-                    }
-                    br.close();
-                    is.close();
-                    // urlConnection.disconnect();
-                    RAW_Json = sb.toString();
-                    JSONObject jsonObject = new JSONObject(RAW_Json);
-                    JSONArray jsonArray = jsonObject.getJSONArray("shops");
-                    //houses = new ArrayList();
-
-                    for (int i=0; i<jsonArray.length(); i++)
-                    {
-                        JSONObject jObject = jsonArray.getJSONObject(i);
-                        shopName.add(jObject.getString("shop_number"));
-                        //images.add(jObject.getString("image"));
-                        //imageDetails.add(jObject.getString("imageUrl"));
-                    }
-
-                }//end of response 2XX
-                else{
-                    //urlConnection.getResponseMessage();
-                }
-                urlConnection.disconnect();
-            } //close of try block
-            catch (java.io.IOException | JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            //super.onPostExecute(aVoid);
-
-            Toast.makeText(getActivity(), " Response code : " + responseCode, Toast.LENGTH_LONG).show();
-            pd.dismiss();
-
-            if (200 <= responseCode && responseCode <=299){
-                //Response OK proceed
-                if(shopName.isEmpty()){
-                    txtError.setVisibility(View.VISIBLE);
-                    txtError.setText("No data for selected category, would be added very soon!");
-                   // txtError.setError("No data for selected category, would be added very soon!");
-                }
-                else{
-                    categoriesAdapter adapter = new categoriesAdapter(getActivity(), shopName);
-                    //old version //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1,values);
-                   // listView.setAdapter(adapter);
-
-                    //Add listview item click listener
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            // i = position, l = id
-                            //use position to get the individual contents. Remember its an array, so its index starts at zero, 0
-                            Toast.makeText(getActivity(),"pos= "+i+", id= "+l,Toast.LENGTH_SHORT).show();
-
-                        }
-                    });
-                }
-
-
-            }
-            else{
-                Toast.makeText(getActivity(), "Error occurred", Toast.LENGTH_LONG).show();
-                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-                alert.setTitle("Error!")
-                        .setCancelable(false)
-                        .setMessage("Problem loading content. Try again?")
-                        .setPositiveButton("Reload", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //RELOAD . should not be that bcos news can't load other tabs could't be clicked. allow other tabs 2 b clicked. simple english
-                                reload();
-
-                            }
-                        })
-                        .setNegativeButton("Exit", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                //Exit App
-                                System.exit(0);
-                                //getActivity().finish();
-
-                            }
-                        });
-                AlertDialog showAlert = alert.create();
-                showAlert.show();
-            }
-
-        }
-
-
     }
 
 }
